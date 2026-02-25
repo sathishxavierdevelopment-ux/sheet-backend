@@ -368,13 +368,13 @@ export const notifyTaskAssigned = async (task, assignedUser, createdByUser) => {
     return { email: emailResult, whatsapp: whatsappResult };
 };
 
-export const notifyStatusChanged = async (task, assignedUser, createdByUser, newStatus) => {
+export const notifyStatusChanged = async (task, updatingUser, recipientUser, newStatus) => {
     const statusColors = getStatusColors(newStatus);
     const emailData = {
-        userName: createdByUser.name,
+        userName: recipientUser.name,
         taskTitle: task.task,
         taskNumber: task.sno,
-        assignedTo: assignedUser.name,
+        assignedTo: updatingUser.name,
         newStatus: newStatus,
         statusBg: statusColors.bg,
         statusColor: statusColors.color,
@@ -393,18 +393,18 @@ export const notifyStatusChanged = async (task, assignedUser, createdByUser, new
     };
 
     const statusEmoji = newStatus === 'Completed' ? '✅' : '🔄';
-    const whatsappMessage = `${statusEmoji} *Task Status Updated*\n\n📋 *Task*: ${task.task}\n👤 *Updated by*: ${assignedUser.name}\n📊 *New Status*: ${newStatus}\n\nView details: ${emailData.taskLink}`;
+    const whatsappMessage = `${statusEmoji} *Task Status Updated*\n\n📋 *Task*: ${task.task}\n👤 *Updated by*: ${updatingUser.name}\n📊 *New Status*: ${newStatus}\n\nView details: ${emailData.taskLink}`;
 
     // Send email
     await sendEmail(
-        createdByUser.email,
+        recipientUser.email,
         `Task Status Updated: ${task.task}`,
         'statusChanged',
         emailData
     );
 
     // Send WhatsApp if user has WhatsApp number
-    if (createdByUser.whatsapp) {
+    if (recipientUser.whatsapp) {
         const config = getWhatsappConfig();
         // Use template if configured AND Business API is available, otherwise fallback to plain text
         // Use user provided template name
@@ -426,21 +426,21 @@ export const notifyStatusChanged = async (task, assignedUser, createdByUser, new
                 : new Date(task.dueDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
             await sendWhatsAppTemplate(
-                createdByUser.whatsapp,
+                recipientUser.whatsapp,
                 templateName,
                 [
-                    createdByUser.name,    // {{1}}
+                    recipientUser.name,    // {{1}}
                     newStatus,             // {{2}}
                     task.sno.toString(),   // {{3}}
                     task.task,             // {{4}}
-                    assignedUser.name,     // {{5}} Updated By
+                    updatingUser.name,     // {{5}} Updated By
                     dueDateTime,           // {{6}}
                     task.notes || 'No notes' // {{7}}
                 ],
                 'en'
             );
         } else {
-            await sendWhatsApp(createdByUser.whatsapp, whatsappMessage);
+            await sendWhatsApp(recipientUser.whatsapp, whatsappMessage);
         }
     }
 };

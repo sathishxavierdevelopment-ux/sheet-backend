@@ -523,24 +523,25 @@ export const updateTaskStatus = async (req, res) => {
         await task.save();
 
         // Send notification when status changes to In Progress or Waiting for Approval.
-        // For forwarded tasks: notify B (forwarder). For direct tasks: notify A (creator).
+        // Use req.user as the updating user to ensure the correct name is shown in notifications.
         if (status === 'In Progress' || status === 'Waiting for Approval') {
-            const assignedToUser = await User.findOne({ email: task.assignedToEmail });
+            const updatingUser = req.user;
 
+            // 1. Always notify the original creator (A)
+            const createdByUser = await User.findOne({ email: task.createdByEmail });
+            if (createdByUser) {
+                notifyStatusChanged(task, updatingUser, createdByUser, status).catch(err => {
+                    console.error('Notification error (creator):', err);
+                });
+            }
+
+            // 2. Also notify the forwarder (B) if the task was forwarded
             if (task.isForwarded && task.forwardedBy) {
-                // Notify B (the forwarder) about C's status update
                 const forwarderUser = await User.findById(task.forwardedBy);
-                if (forwarderUser && assignedToUser) {
-                    notifyStatusChanged(task, assignedToUser, forwarderUser, status).catch(err => {
+                // Don't notify again if forwarder is the same as creator
+                if (forwarderUser && forwarderUser.email !== task.createdByEmail) {
+                    notifyStatusChanged(task, updatingUser, forwarderUser, status).catch(err => {
                         console.error('Notification error (forwarder):', err);
-                    });
-                }
-            } else {
-                // Notify A (original creator) about status update
-                const createdByUser = await User.findOne({ email: task.createdByEmail });
-                if (createdByUser && assignedToUser) {
-                    notifyStatusChanged(task, assignedToUser, createdByUser, status).catch(err => {
-                        console.error('Notification error (creator):', err);
                     });
                 }
             }
