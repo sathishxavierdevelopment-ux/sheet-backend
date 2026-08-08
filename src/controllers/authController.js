@@ -20,10 +20,8 @@ export const login = async (req, res) => {
             return res.status(400).json({ error: 'Please provide WhatsApp number and password' });
         }
         // Find user by whatsapp and include password, populate role and department
-        const user = await User.findOne({ phone: whatsapp })
-    .select('+password')
-    .populate('role')
-    .populate('department', 'name');
+const user = await User.findOne({ phone: whatsapp })
+    .select('+password');
 
         if (!user) {
             console.log('User not found for whatsapp:', whatsapp);
@@ -51,9 +49,9 @@ export const login = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 whatsapp: user.whatsapp,
-                role: user.role,
-                permissions: user.role?.permissions || {},
-                department: user.department,
+role: user.role,
+permissions: {},
+department: user.department,
             },
         });
     } catch (error) {
@@ -78,9 +76,9 @@ export const getCurrentUser = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 whatsapp: user.whatsapp,
-                role: user.role,
-                permissions: user.role?.permissions || {},
-                department: user.department,
+role: user.role,
+permissions: {},
+department: user.department,
             },
         });
     } catch (error) {
@@ -146,9 +144,9 @@ export const register = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 whatsapp: user.whatsapp,
-                role: user.role,
-                department: user.department,
-                designation: user.designation,
+role: user.role,
+permissions: {},
+department: user.department,
             },
         });
     } catch (error) {
