@@ -17,8 +17,6 @@ import passwordResetRoutes from "./routes/passwordReset.js";
 
 dotenv.config();
 // Connect to database - will be cached in serverless environment
-connectDB().catch(err => console.error('Database connection error:', err));
-
 const app = express();
 
 app.use(
@@ -40,6 +38,21 @@ app.options("*", cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Ensure MongoDB is connected before handling API requests
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (error) {
+        console.error("Database middleware error:", error);
+
+        res.status(500).json({
+            success: false,
+            error: "Database connection failed",
+        });
+    }
+});
 
 app.get("/", (req, res) => {
     res.json({ message: "Task Management API is running" });

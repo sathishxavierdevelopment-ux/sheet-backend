@@ -95,7 +95,7 @@ export const register = async (req, res) => {
         const { name, email, whatsapp, password, role, department, designation } = req.body;
 
         // Check if WhatsApp already exists (email can be duplicated)
-        const userExists = await User.findOne({ whatsapp });
+        const userExists = await User.findOne({ phone: whatsapp });
 
         if (userExists) {
             return res.status(400).json({ error: 'User with this WhatsApp number already exists' });
@@ -126,7 +126,7 @@ export const register = async (req, res) => {
         const user = await User.create({
             name,
             email,
-            whatsapp,
+            phone: whatsapp,
             password,
             role: role || 'Staff',
             department: department && department !== '' ? department : null,
