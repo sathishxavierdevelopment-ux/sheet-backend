@@ -23,13 +23,13 @@ const app = express();
 
 app.use(
   cors({
-    origin: [
-      "https://sheet-frontend-six.vercel.app",
-      "https://placetest.in",
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "http://localhost:5714"
-    ],
+origin: [
+  "https://sheet-frontend-six.vercel.app",
+  "https://placetest.in",
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:5714"
+],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
@@ -67,10 +67,9 @@ app.get("/api/env-check", (req, res) => {
 // Test endpoint for debugging Vercel deployment
 app.get("/api/test", async (req, res) => {
   try {
-    // Ensure database is connected
-    await connectDB();
+    const db = await connectDB();
 
-    const dbState = mongoose.connection.readyState;
+    const dbState = db.connection.readyState;
 
     const states = {
       0: "disconnected",
@@ -83,7 +82,8 @@ app.get("/api/test", async (req, res) => {
       success: true,
       database: {
         state: states[dbState] || "unknown",
-        stateCode: dbState
+        stateCode: dbState,
+        name: db.connection.name
       },
       environment: {
         nodeEnv: process.env.NODE_ENV,
