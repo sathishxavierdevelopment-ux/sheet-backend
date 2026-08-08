@@ -1,8 +1,10 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import mongoose from "mongoose";
 import connectDB from "./config/database.js";
 import { errorHandler, notFound } from "./middleware/errorHandler.js";
+
 
 import authRoutes from "./routes/auth.js";
 import taskRoutes from "./routes/tasks.js";
@@ -64,39 +66,40 @@ app.get("/api/env-check", (req, res) => {
 
 // Test endpoint for debugging Vercel deployment
 app.get("/api/test", async (req, res) => {
-    try {
-        // Ensure database is connected
-        await connectDB();
+  try {
+    // Ensure database is connected
+    await connectDB();
 
-        const mongoose = await import('mongoose');
-        const dbState = mongoose.connection.readyState;
-        const states = {
-            0: 'disconnected',
-            1: 'connected',
-            2: 'connecting',
-            3: 'disconnecting'
-        };
+    const dbState = mongoose.connection.readyState;
 
-        res.json({
-            success: true,
-            database: {
-                state: states[dbState] || 'unknown',
-                stateCode: dbState
-            },
-            environment: {
-                nodeEnv: process.env.NODE_ENV,
-                hasMongoUri: !!process.env.MONGODB_URI,
-                hasJwtSecret: !!process.env.JWT_SECRET,
-                jwtExpires: process.env.JWT_EXPIRES_IN
-            }
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            error: error.message,
-            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
-        });
-    }
+    const states = {
+      0: "disconnected",
+      1: "connected",
+      2: "connecting",
+      3: "disconnecting"
+    };
+
+    res.json({
+      success: true,
+      database: {
+        state: states[dbState] || "unknown",
+        stateCode: dbState
+      },
+      environment: {
+        nodeEnv: process.env.NODE_ENV,
+        hasMongoUri: !!process.env.MONGODB_URI,
+        hasJwtSecret: !!process.env.JWT_SECRET,
+        jwtExpires: process.env.JWT_EXPIRES_IN
+      }
+    });
+  } catch (error) {
+    console.error("TEST DATABASE ERROR:", error);
+
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
 });
 
 app.use("/api/auth", authRoutes);
