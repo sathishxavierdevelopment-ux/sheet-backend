@@ -20,8 +20,10 @@ export const login = async (req, res) => {
             return res.status(400).json({ error: 'Please provide WhatsApp number and password' });
         }
         // Find user by whatsapp and include password, populate role and department
-const user = await User.findOne({ phone: whatsapp })
-    .select('+password');
+        const user = await User.findOne({ phone: whatsapp })
+    .select('+password')
+    .populate('role')
+    .populate('department', 'name');
 
         if (!user) {
             console.log('User not found for whatsapp:', whatsapp);
@@ -49,9 +51,9 @@ const user = await User.findOne({ phone: whatsapp })
                 name: user.name,
                 email: user.email,
                 whatsapp: user.whatsapp,
-role: user.role,
-permissions: {},
-department: user.department,
+                role: user.role,
+                permissions: user.role?.permissions || {},
+                department: user.department,
             },
         });
     } catch (error) {
@@ -76,9 +78,9 @@ export const getCurrentUser = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 whatsapp: user.whatsapp,
-role: user.role,
-permissions: {},
-department: user.department,
+                role: user.role,
+                permissions: user.role?.permissions || {},
+                department: user.department,
             },
         });
     } catch (error) {
@@ -95,7 +97,7 @@ export const register = async (req, res) => {
         const { name, email, whatsapp, password, role, department, designation } = req.body;
 
         // Check if WhatsApp already exists (email can be duplicated)
-        const userExists = await User.findOne({ phone: whatsapp });
+        const userExists = await User.findOne({ whatsapp });
 
         if (userExists) {
             return res.status(400).json({ error: 'User with this WhatsApp number already exists' });
@@ -126,7 +128,7 @@ export const register = async (req, res) => {
         const user = await User.create({
             name,
             email,
-            phone: whatsapp,
+            whatsapp,
             password,
             role: role || 'Staff',
             department: department && department !== '' ? department : null,
@@ -144,9 +146,9 @@ export const register = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 whatsapp: user.whatsapp,
-role: user.role,
-permissions: {},
-department: user.department,
+                role: user.role,
+                department: user.department,
+                designation: user.designation,
             },
         });
     } catch (error) {

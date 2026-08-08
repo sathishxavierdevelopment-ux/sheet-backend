@@ -19,12 +19,12 @@ const userSchema = new mongoose.Schema(
             lowercase: true,
             trim: true,
         },
-phone: {
-    type: String,
-    required: [true, "WhatsApp number is required"],
-    unique: true,
-    trim: true,
-},
+        whatsapp: {
+            type: String,
+            required: [true, 'WhatsApp number is required'],
+            unique: true,
+            trim: true,
+        },
         password: {
             type: String,
             required: [true, 'Password is required'],
