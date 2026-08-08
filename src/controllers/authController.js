@@ -20,7 +20,7 @@ export const login = async (req, res) => {
             return res.status(400).json({ error: 'Please provide WhatsApp number and password' });
         }
         // Find user by whatsapp and include password, populate role and department
-        const user = await User.findOne({ phone: whatsapp })
+const user = await User.findOne({ whatsapp })
     .select('+password')
     .populate('role')
     .populate('department', 'name');
