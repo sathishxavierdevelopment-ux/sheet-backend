@@ -50,7 +50,7 @@ export const login = async (req, res) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                whatsapp: user.phone,
+                whatsapp: user.whatsapp,
                 role: user.role,
                 permissions: user.role?.permissions || {},
                 department: user.department,
@@ -77,7 +77,7 @@ export const getCurrentUser = async (req, res) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                whatsapp: user.phone,
+                whatsapp: user.whatsapp,
                 role: user.role,
                 permissions: user.role?.permissions || {},
                 department: user.department,
@@ -97,7 +97,7 @@ export const register = async (req, res) => {
         const { name, email, whatsapp, password, role, department, designation } = req.body;
 
         // Check if WhatsApp already exists (email can be duplicated)
-        const userExists = await User.findOne({ phone: whatsapp });
+        const userExists = await User.findOne({ whatsapp });
 
         if (userExists) {
             return res.status(400).json({ error: 'User with this WhatsApp number already exists' });
@@ -125,11 +125,11 @@ export const register = async (req, res) => {
         }
 
         // Create user
-const user = await User.create({
-    name,
-    email,
-    phone: whatsapp,
-    password,
+        const user = await User.create({
+            name,
+            email,
+            whatsapp,
+            password,
             role: role || 'Staff',
             department: department && department !== '' ? department : null,
             designation: designation || '',
@@ -145,7 +145,7 @@ const user = await User.create({
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                whatsapp: user.phone,
+                whatsapp: user.whatsapp,
                 role: user.role,
                 department: user.department,
                 designation: user.designation,
