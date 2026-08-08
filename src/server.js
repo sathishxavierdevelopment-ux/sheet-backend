@@ -22,12 +22,11 @@ const app = express();
 app.use(
     cors({
         origin: [
-            "https://sheet-frontend-lemon.vercel.app",
-            "https://sheet-backend-orpin.vercel.app",
-            "https://placetest.in",
-            "http://localhost:5173",
-            "http://localhost:5174",
-            "http://localhost:5714"
+      "https://sheet-frontend-six.vercel.app",
+      "https://placetest.in",
+      "http://localhost:5173",
+      "http://localhost:5174",
+      "http://localhost:5714"
         ],
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization"],
