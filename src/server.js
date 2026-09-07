@@ -21,13 +21,14 @@ const app = express();
 
 app.use(
   cors({
-origin: [
-  "https://sheet-frontend-six.vercel.app",
-  "https://placetest.in",
-  "http://localhost:5173",
-  "http://localhost:5174",
-  "http://localhost:5714"
-],
+    origin: [
+      "https://sheet-frontend-six.vercel.app",
+      "https://task.vcgreen.in",
+      "https://placetest.in",
+      "http://localhost:5173",
+      "http://localhost:5174",
+      "http://localhost:5714"
+    ],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
@@ -41,40 +42,40 @@ app.use(express.urlencoded({ extended: true }));
 
 // Ensure MongoDB is connected before handling API requests
 app.use(async (req, res, next) => {
-    try {
-        await connectDB();
-        next();
-    } catch (error) {
-        console.error("Database middleware error:", error);
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error("Database middleware error:", error);
 
-        res.status(500).json({
-            success: false,
-            error: "Database connection failed",
-        });
-    }
+    res.status(500).json({
+      success: false,
+      error: "Database connection failed",
+    });
+  }
 });
 
 app.get("/", (req, res) => {
-    res.json({ message: "Task Management API is running" });
+  res.json({ message: "Task Management API is running" });
 });
 
 // Environment variables check endpoint
 app.get("/api/env-check", (req, res) => {
-    res.json({
-        success: true,
-        environment: {
-            NODE_ENV: process.env.NODE_ENV || 'not set',
-            hasMongoUri: !!process.env.MONGODB_URI,
-            mongoUriLength: process.env.MONGODB_URI?.length || 0,
-            hasJwtSecret: !!process.env.JWT_SECRET,
-            jwtSecretLength: process.env.JWT_SECRET?.length || 0,
-            jwtExpiresIn: process.env.JWT_EXPIRES_IN || 'not set',
-            hasFrontendUrl: !!process.env.FRONTEND_URL,
-            frontendUrl: process.env.FRONTEND_URL || 'not set',
-            port: process.env.PORT || 'not set'
-        },
-        message: "Check if all required variables are set. MongoDB URI and JWT Secret should have length > 0"
-    });
+  res.json({
+    success: true,
+    environment: {
+      NODE_ENV: process.env.NODE_ENV || 'not set',
+      hasMongoUri: !!process.env.MONGODB_URI,
+      mongoUriLength: process.env.MONGODB_URI?.length || 0,
+      hasJwtSecret: !!process.env.JWT_SECRET,
+      jwtSecretLength: process.env.JWT_SECRET?.length || 0,
+      jwtExpiresIn: process.env.JWT_EXPIRES_IN || 'not set',
+      hasFrontendUrl: !!process.env.FRONTEND_URL,
+      frontendUrl: process.env.FRONTEND_URL || 'not set',
+      port: process.env.PORT || 'not set'
+    },
+    message: "Check if all required variables are set. MongoDB URI and JWT Secret should have length > 0"
+  });
 });
 
 // Test endpoint for debugging Vercel deployment
