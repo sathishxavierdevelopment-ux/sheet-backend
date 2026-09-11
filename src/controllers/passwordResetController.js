@@ -46,9 +46,11 @@ export const sendOTP = async (req, res) => {
             return res.status(404).json({ error: 'No account found with this WhatsApp number' });
         }
 
+
         // Generate 6-digit OTP
         const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
 
+        console.log("OTP Code:", otpCode);
         // Delete any existing OTPs for this number
         await OTP.deleteMany({ whatsapp });
 
