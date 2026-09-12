@@ -192,8 +192,6 @@ export const sendOTPWhatsApp = async (to, otp) => {
     try {
         const templateName = 'vc_forget_password';
 
-        console.log(config, "iiii");
-
         // Check if WhatsApp API is configured
         if (!config.apiUrl || !config.accessToken) {
             console.log('WhatsApp not configured, falling back to plain text');
