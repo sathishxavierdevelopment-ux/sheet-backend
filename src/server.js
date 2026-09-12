@@ -23,6 +23,7 @@ app.use(
   cors({
     origin: [
       "https://sheet-frontend-six.vercel.app",
+      "https://sheet-frontend-git-dev-sathish-team.vercel.app",
       "https://task.vcgreen.in",
       "https://placetest.in",
       "http://localhost:5173",
