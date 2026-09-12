@@ -190,7 +190,7 @@ export const sendWhatsAppTemplate = async (to, templateName, parameters, languag
 export const sendOTPWhatsApp = async (to, otp) => {
     const config = getWhatsappConfig();
     try {
-        const templateName = 'login_vcgreen';
+        const templateName = 'vc_forget_password';
 
         // Check if WhatsApp API is configured
         if (!config.apiUrl || !config.accessToken) {
